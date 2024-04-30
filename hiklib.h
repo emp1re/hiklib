@@ -66,6 +66,7 @@ extern "C"
   int HReboot(int user);
   int HListVideo(int lUserID, struct MotionVideos *videos, int chno);
   int HSaveFile(int userId, char *srcfile, char *destfile);
+  int HSaveFileByTime(int userId, char *srcfile, char *destfile, int year, int month, int day, int hour, int min, int sec);
   int HFormatDisk(int userID,int disk);
 
 #ifdef __cplusplus
