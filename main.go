@@ -238,6 +238,10 @@ func HikSaveFile(userId int, srcfile string, destfile string) int {
 	return int(C.HSaveFile(C.int(userId), C.CString(srcfile), C.CString(destfile)))
 }
 
+func HikSaveFileByTime(userId int, year, month, day, hour, min, sec int, destfile string) int {
+	return int(C.HSaveFileByTime(C.int(userId), C.int(year), C.int(month), C.int(day), C.int(hour), C.int(min), C.int(sec), C.CString(destfile)))
+}
+
 // HikFormatDisk - format disks
 func HikFormatDisk(user int, disk int) int {
 	return int(C.HFormatDisk(C.int(user), C.int(disk)))

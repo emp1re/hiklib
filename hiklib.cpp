@@ -366,6 +366,73 @@ int HSaveFile(int userId, char *srcfile, char *destfile)
   }
 }
 
+int HSaveFileByTime(int userId, int chno, char *destfile, int year, int month, int day, int hour, int min, int sec)
+{
+  printf("Save %d-%d-%d %d:%d:%d\n", year, month, day, hour, min, sec);
+
+  NET_DVR_PLAYCOND struDownloadCond = {0};
+  struDownloadCond.dwChannel = chno;
+  struDownloadCond.struStartTime.wYear = year;
+  struDownloadCond.struStartTime.byMonth = month;
+  struDownloadCond.struStartTime.byDay = day;
+  struDownloadCond.struStartTime.byHour = hour;
+  struDownloadCond.struStartTime.byMinute = min;
+  struDownloadCond.struStartTime.bySecond = sec;
+  struDownloadCond.struStopTime.wYear = year;
+  struDownloadCond.struStopTime.byMonth = month;
+  struDownloadCond.struStopTime.byDay = day;
+  struDownloadCond.struStopTime.byHour = hour;
+  struDownloadCond.struStopTime.byMinute = min;
+  struDownloadCond.struStopTime.bySecond = sec;
+
+  int hPlayback = 0;
+  if ((hPlayback = NET_DVR_GetFileByTime(userId, chno, &struDownloadCond, destfile)) < 0)
+  {
+    error("GetFileByTime");
+    return -1;
+  }
+
+  if (!NET_DVR_PlayBackControl(hPlayback, NET_DVR_PLAYSTART, 0, NULL))
+  {
+    error("Playback control");
+    return -1;
+  }
+
+  int pos = 0;
+  int lastpos = 0;
+  for (pos = 0; pos < 100 && pos >= 0;
+       pos = NET_DVR_GetDownloadPos(hPlayback))
+  {
+    if (lastpos != pos)
+    {
+      printf("%d\r", pos);
+      fflush(stdout);
+      lastpos = pos;
+    }
+  }
+  printf("\n");
+
+  if (!NET_DVR_StopGetFile(hPlayback))
+  {
+    error("Stop get file");
+    return -1;
+  }
+
+  printf("%s\n", destfile);
+
+  if (pos < 0 || pos > 100)
+  {
+    error("Download");
+    return -1;
+  }
+  else
+  {
+    return 0;
+}
+
+
+
+
 int HFormatDisk(int userID,int disk) {
   return NET_DVR_FormatDisk(userID,disk);
 }
